@@ -3,7 +3,7 @@ package org.khaliuss.coinflipper;
 import org.khaliuss.coinflipper.dialog.Dialog;
 import org.khaliuss.coinflipper.dialog.IntegerMinMaxDialog;
 import org.khaliuss.coinflipper.models.Coin;
-import org.khaliuss.coinflipper.models.Player;
+import org.khaliuss.coinflipper.models.players.Player;
 
 import java.util.ArrayList;
 import java.util.List;

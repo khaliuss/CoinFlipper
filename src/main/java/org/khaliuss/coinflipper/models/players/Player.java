@@ -1,4 +1,4 @@
-package org.khaliuss.coinflipper.models;
+package org.khaliuss.coinflipper.models.players;
 
 import java.util.Objects;
 

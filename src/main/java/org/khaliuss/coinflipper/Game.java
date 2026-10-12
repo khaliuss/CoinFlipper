@@ -5,7 +5,8 @@ import org.khaliuss.coinflipper.dialog.IntegerSelectDialog;
 import org.khaliuss.coinflipper.models.BetPool;
 import org.khaliuss.coinflipper.models.Coin;
 import org.khaliuss.coinflipper.models.GameResultAnalyze;
-import org.khaliuss.coinflipper.models.Player;
+import org.khaliuss.coinflipper.models.players.Bot;
+import org.khaliuss.coinflipper.models.players.Player;
 
 import java.util.List;
 
@@ -25,17 +26,13 @@ public class Game {
     }
 
     public void start() {
-
+        Coin.Side side;
         for (Player player : players) {
-            String title = "%s, please input your toss Head[%d] or Tail[%d]:".formatted(player.getName(), MIN, MAX);
-            String error = "Incorrect value!";
-            List<Integer> keys = List.of(MIN, MAX);
-
-            Dialog<Integer> dialog = new IntegerSelectDialog(title, error, keys);
-            Integer sideKey = dialog.input();
-            Coin.Side side = toSide(sideKey);
-
-
+            if (player instanceof Bot bot) {
+                side = inputBetFromBot(bot);
+            } else {
+                side = inputBetFromRealPlayer(player);
+            }
             betPool.put(player, side);
         }
 
@@ -47,17 +44,42 @@ public class Game {
                 It landed on: %s
                 """, winSideName);
 
-        GameResultAnalyze gameResultAnalyze = new GameResultAnalyze(betPool,players,winSide);
+        GameResultAnalyze gameResultAnalyze = new GameResultAnalyze(betPool, players, winSide);
 
         List<Player> winers = gameResultAnalyze.getWiners();
         List<Player> losers = gameResultAnalyze.getLosers();
 
 
-        printGameResult(winers,losers);
+        printGameResult(winers, losers);
 
 
+    }
 
+    private Coin.Side inputBetFromRealPlayer(Player player) {
+        String title = "%s, please input your toss Head[%d] or Tail[%d]:".formatted(player.getName(), MIN, MAX);
+        String error = "Incorrect value!";
+        List<Integer> keys = List.of(MIN, MAX);
 
+        Dialog<Integer> dialog = new IntegerSelectDialog(title, error, keys);
+        Integer sideKey = dialog.input();
+        Coin.Side side = toSide(sideKey);
+        return side;
+    }
+
+    private Coin.Side inputBetFromBot(Bot bot) {
+        String title = "%s, please input your toss Head[%d] or Tail[%d]:".formatted(bot.getName(), MIN, MAX);
+        System.out.print(title);
+        Coin.Side botBetSide = bot.getBet();
+        int sideKey = toSideKey(botBetSide);
+        System.out.println(sideKey);
+        return botBetSide;
+    }
+
+    private int toSideKey(Coin.Side botBetSide) {
+        return switch (botBetSide){
+            case HEADS ->  MIN;
+            case TAILS ->  MAX;
+        };
     }
 
     private void printGameResult(List<Player> winers, List<Player> losers) {
@@ -65,7 +87,7 @@ public class Game {
             System.out.println("All players lose!");
         } else if (players.isEmpty()) {
             System.out.println("All players won!");
-        }else {
+        } else {
             System.out.print("Winners: ");
             printList(winers);
             System.out.print("Losers: ");
@@ -76,7 +98,7 @@ public class Game {
     private void printList(List<Player> players) {
         for (int i = 0; i < players.size(); i++) {
             System.out.print(players.get(i).getName());
-            if (i != players.size()-1){
+            if (i != players.size() - 1) {
                 System.out.print(", ");
             }
         }

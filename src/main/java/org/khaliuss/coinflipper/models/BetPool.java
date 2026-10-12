@@ -1,5 +1,7 @@
 package org.khaliuss.coinflipper.models;
 
+import org.khaliuss.coinflipper.models.players.Player;
+
 import java.util.HashMap;
 import java.util.Map;
 
